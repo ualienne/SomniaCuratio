@@ -6,6 +6,7 @@
 
 #include "Background.h"
 #include "Player.h"
+#include "Inventory.h"
 
 class Game {
  public:
@@ -19,6 +20,9 @@ class Game {
   sf::RenderWindow m_window;
   Background m_background;
   Player m_player;
+
+  Inventory m_inventory;
+  sf::Font m_font;
 };
 
 #endif
