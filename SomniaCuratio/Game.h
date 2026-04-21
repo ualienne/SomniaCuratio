@@ -2,11 +2,15 @@
 #define GAME_H
 
 #include <SFML/Graphics.hpp>
+#include <iostream>
 #include <optional>
+#include <string>
 
 #include "Background.h"
-#include "Player.h"
+#include "DialogueManager.h"
 #include "Inventory.h"
+#include "Npc.h"
+#include "Player.h"
 
 class Game {
  public:
@@ -20,9 +24,9 @@ class Game {
   sf::RenderWindow m_window;
   Background m_background;
   Player m_player;
-
   Inventory m_inventory;
   sf::Font m_font;
+  std::vector<std::unique_ptr<Npc>> m_npcs;
 };
 
 #endif

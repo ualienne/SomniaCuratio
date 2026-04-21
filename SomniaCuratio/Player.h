@@ -10,6 +10,9 @@ class Player {
   bool load(const std::string& filename);
   void handleInput(sf::Keyboard::Key key);
   void draw(sf::RenderWindow& window);
+  sf::Vector2f getPosition() const {
+    return m_sprite.getPosition();
+  }
 
  private:
   sf::Texture m_texture;//Ќужно дл€ геро€, не трогать иначе баги пойдут

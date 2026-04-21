@@ -1,20 +1,27 @@
 #include "Background.h"
 
-Background::Background() : m_sprite(m_texture) {}
+Background::Background() : m_texture(nullptr), m_sprite(nullptr) {}
 
-bool Background::load(const std::string& filename, sf::Vector2u windowSize) {
-  if (!m_texture.loadFromFile(filename)) {
+bool Background::load(const std::string& path, sf::Vector2u windowSize) {
+  m_texture = std::make_unique<sf::Texture>();
+
+  if (!m_texture->loadFromFile(path)) {
     return false;
   }
-  m_sprite.setTexture(m_texture, true);
 
-  float scaleX = static_cast<float>(windowSize.x) / m_texture.getSize().x;
-  float scaleY = static_cast<float>(windowSize.y) / m_texture.getSize().y;
-  m_sprite.setScale(
-      {scaleX, scaleY});  // Подгон по размеру экрана. Думаю можно настроить
-                          // так, чтобы сразу на весь экран открывалась игра
+  m_sprite = std::make_unique<sf::Sprite>(*m_texture);
+
+  // Масштабирование
+  sf::Vector2u textureSize = m_texture->getSize();
+  float scaleX = static_cast<float>(windowSize.x) / textureSize.x;
+  float scaleY = static_cast<float>(windowSize.y) / textureSize.y;
+  m_sprite->setScale({scaleX, scaleY});
 
   return true;
 }
 
-void Background::draw(sf::RenderWindow& window) { window.draw(m_sprite); }
+void Background::draw(sf::RenderWindow& window) {
+  if (m_sprite) {
+    window.draw(*m_sprite);
+  }
+}
