@@ -47,20 +47,6 @@ void Inventory::addItem(std::string name, int count, std::string stats,
   saveToFile("inventory.txt");
 }
 
-void Inventory::removeItem(const std::string& name) {
-  for (auto it = m_items.begin(); it != m_items.end(); ++it) {
-    if (it->name == name) {
-      if (it->count > 1) {
-        it->count--;
-      } else {
-        m_items.erase(it);
-      }
-      break;
-    }
-  }
-  saveToFile("inventory.txt");
-}
-
 void Inventory::draw(sf::RenderWindow& window, const sf::Font& font) {
   if (!m_isVisible) return;
   sf::RectangleShape bg({300.f, 400.f});

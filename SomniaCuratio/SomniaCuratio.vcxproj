@@ -129,7 +129,10 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Background.cpp" />
+    <ClCompile Include="CombatManager.cpp" />
+    <ClCompile Include="CombatUI.cpp" />
     <ClCompile Include="DialogueManager.cpp" />
+    <ClCompile Include="Enemy.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="Inventory.cpp" />
     <ClCompile Include="Npc.cpp" />
@@ -138,15 +141,20 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Background.h" />
+    <ClInclude Include="CombatManager.h" />
+    <ClInclude Include="CombatUI.h" />
     <ClInclude Include="DialogueManager.h" />
+    <ClInclude Include="Enemy.h" />
     <ClInclude Include="Entity.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="Inventory.h" />
     <ClInclude Include="Npc.h" />
     <ClInclude Include="Player.h" />
+    <ClInclude Include="StatsManager.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="inventory.txt" />
+    <Text Include="stats.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

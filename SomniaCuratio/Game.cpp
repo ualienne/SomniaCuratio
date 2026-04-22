@@ -1,14 +1,17 @@
 #include "Game.h"
+
 #include <cmath>
 #include <iostream>
+#include "StatsManager.h"
 
-Game::Game() : m_window(sf::VideoMode({800, 600}), "SomniaCuratio") {
-  if (!m_font.openFromFile("arial.ttf")) {
+Game::Game()
+    : m_window(sf::VideoMode({800, 600}), "SomniaCuratio"), m_combatUI(m_font) {
+  if (!m_font.openFromFile(
+          "arial.ttf")) { 
   }
 
   m_background.load("Bureau_map.png", m_window.getSize());
   m_player.load("Adam_idle_16x16.png");
-
 
   // Амелия
   auto Amelia = std::make_unique<Npc>(u8"Амелия", "Amelia_idle_16x16.png");
@@ -56,6 +59,40 @@ void Game::processEvents() {
     }
 
     if (const auto* keyPressed = event->getIf<sf::Event::KeyPressed>()) {
+      // Активация боя с разработчиком для теста
+      if (keyPressed->code == sf::Keyboard::Key::Z && !m_inCombat) {
+        m_combat.startCombat(std::make_unique<Developer>());
+        m_inCombat = true;
+      }
+
+      if (m_inCombat) {
+        // 1 - Атака
+        if (keyPressed->code == sf::Keyboard::Key::Num1)
+          m_combat.playerAttack();
+
+        // 2 - Защита
+        if (keyPressed->code == sf::Keyboard::Key::Num2)
+          m_combat.playerDefend();
+
+        // 3 - Использование ЛЕЧЕНИЯ из инвентаря
+        if (keyPressed->code == sf::Keyboard::Key::Num3) {
+          // Проверяем предмет в инвентаре (название должно совпадать с тем, что
+          // в inventory.txt)
+          if (m_inventory.hasItem(u8"Аптечка")) {
+            PlayerStats ps = StatsManager::load();
+            ps.hp = std::min(ps.maxHp, ps.hp + 40);  // Лечим на 40 HP
+            StatsManager::save(ps);
+
+            m_inventory.removeItem(u8"Аптечка");
+            // Ход врага НЕ вызываем, так как лечение 
+          }
+        }
+
+        // Если наступил ход врага
+        if (m_combat.getState() == CombatState::ENEMY_TURN) {
+          m_combat.enemyTurn();
+        }
+      }
       if (keyPressed->code == sf::Keyboard::Key::E) {
         if (DialogueManager::instance().isVisible()) {
           DialogueManager::instance().hide();
@@ -96,5 +133,14 @@ void Game::render() {
   m_player.draw(m_window);
   m_inventory.draw(m_window, m_font);
   DialogueManager::instance().draw(m_window, m_font);
+  if (!m_inCombat) {
+    m_player.draw(m_window);
+    for (auto& npc : m_npcs) npc->draw(m_window);
+  } else {
+
+    m_combatUI.draw(m_window, m_combat);
+  }
+
+    
   m_window.display();
 }
