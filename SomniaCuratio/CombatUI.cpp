@@ -2,7 +2,6 @@
 
 #include "StatsManager.h"
 
-
 CombatUI::CombatUI(sf::Font& font)
     : m_infoText(font), m_buttons{font, font, font, font} {
   m_border.setSize({700.f, 160.f});
@@ -22,8 +21,7 @@ CombatUI::CombatUI(sf::Font& font)
   m_hpBarYellow.setPosition({350.f, 360.f});
 
   // Текст
-  m_infoText.setCharacterSize(
-      18);
+  m_infoText.setCharacterSize(18);
   m_infoText.setFillColor(sf::Color::White);
   m_infoText.setPosition({75.f, 300.f});
 
@@ -46,30 +44,34 @@ void CombatUI::draw(sf::RenderWindow& window, const CombatManager& combat) {
   window.draw(m_bg);
 
   PlayerStats ps = StatsManager::load();
+
+  // Рисуем HP полоску
   float hpRatio = (ps.maxHp > 0) ? static_cast<float>(ps.hp) / ps.maxHp : 0.f;
   m_hpBarYellow.setSize({100.f * std::max(0.f, hpRatio), 15.f});
   window.draw(m_hpBarRed);
   window.draw(m_hpBarYellow);
 
-  if (combat.getEnemy()) {
-    std::wstring status;
-    std::wstring pName(ps.name.begin(), ps.name.end());
+  std::wstring pName(ps.name.begin(), ps.name.end());
+  std::wstring status;
 
+  std::wstring lucidityText =
+      L"Lucidity: " + std::to_wstring(ps.lucidity) + L"\n";
+
+  if (combat.getEnemy()) {
     switch (combat.getState()) {
       case CombatState::PLAYER_TURN:
-        if (!combat.getLastActionMessage().empty())
-          status = combat.getLastActionMessage() + L"\nТвой ход, " + pName;
-        else
-          status = L"Твой ход, " + pName;
+        status = lucidityText + combat.getLastActionMessage() +
+                 L"\nТвой ход, " + pName;
         break;
       case CombatState::ENEMY_TURN:
-        status = L"Враг замахивается...";
+        status = lucidityText + L"Враг замахивается...";
         break;
       case CombatState::WIN:
         status = L"Победа!";
         break;
       case CombatState::LOSE:
-        status = L"Ты проиграла...";
+        status = L"Твоя осознанность падает...\nLucidity: " +
+                 std::to_wstring(ps.lucidity);
         break;
     }
     m_infoText.setString(status);

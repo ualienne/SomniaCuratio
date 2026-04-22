@@ -1,6 +1,7 @@
 #include "CombatManager.h"
 
 #include "StatsManager.h"
+
 void CombatManager::startCombat(std::unique_ptr<Enemy> enemy) {
   m_currentEnemy = std::move(enemy);
   m_state = CombatState::PLAYER_TURN;
@@ -24,6 +25,7 @@ void CombatManager::playerDefend() {
 
 void CombatManager::enemyTurn() {
   if (m_state != CombatState::ENEMY_TURN) return;
+
   PlayerStats ps = StatsManager::load();
   int dmg = m_currentEnemy->attack();
   if (m_isDefending) {
@@ -32,12 +34,16 @@ void CombatManager::enemyTurn() {
   }
 
   ps.hp -= dmg;
-  StatsManager::save(ps);
 
-  m_lastActionMessage = L"пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ " + std::to_wstring(dmg) + L" пїЅпїЅпїЅпїЅпїЅ!";
-
-  if (ps.hp <= 0)
+  if (ps.hp <= 0) {
+    ps.hp = 0;
+    ps.lucidity -= 10;
+    if (ps.lucidity < 0) ps.lucidity = 0;  
     m_state = CombatState::LOSE;
-  else
+  } else {
     m_state = CombatState::PLAYER_TURN;
+  }
+
+  m_lastActionMessage = L"Враг нанес " + std::to_wstring(dmg) + L" урона!";
+  StatsManager::save(ps);
 }
