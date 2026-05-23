@@ -1,6 +1,3 @@
-<<<<<<< Updated upstream
-# SomniaCuratio
-=======
 # Somnia Curatio
 
 
@@ -57,5 +54,3 @@ cmake --build build --config Release
 * Спрайты персонажей: `assets/sprites/characters/`
 * Тайлсеты Tiled: `assets/tilesets/`
 * Карты Tiled: `assets/maps/`
-
->>>>>>> Stashed changes
