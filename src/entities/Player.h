@@ -1,5 +1,4 @@
-#ifndef SOMNIA_ENTITIES_PLAYER_H
-#define SOMNIA_ENTITIES_PLAYER_H
+#pragma once
 
 #include <SFML/Graphics/Drawable.hpp>
 #include <SFML/Graphics/Sprite.hpp>
@@ -36,10 +35,10 @@ class Player : public sf::Drawable {
 
   int getHP() const { return m_hp; }
   int getMaxHP() const { return m_maxHp; }
-  bool isAlive() const { return m_hp > 0; }
+  bool isAlive() const { return m_hp > m_deadHpThreshold; }
   void takeDamage(int amount) {
     m_hp -= amount;
-    if (m_hp < 0) m_hp = 0;
+    if (m_hp < m_minHp) m_hp = m_minHp;
   }
 
   void heal(int amount) { m_hp = std::min(m_hp + amount, m_maxHp); }
@@ -47,6 +46,19 @@ class Player : public sf::Drawable {
  private:
   void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
   void refreshSprite();
+
+  static constexpr int m_deadHpThreshold = 0;
+  static constexpr int m_minHp = 0;
+
+  static constexpr float m_minStepDurationLimit = 0.f;
+  static constexpr float m_interpolationProgressMax = 1.f;
+  static constexpr float m_tileHalfDivider = 2.f;
+
+  static constexpr int m_tileStepOffset = 3;
+
+  static constexpr int m_textureRectTop = 0;
+  static constexpr float m_spriteScaleX = 4.f;
+  static constexpr float m_spriteScaleY = 4.f;
 
   std::shared_ptr<sf::Texture> m_texture;
   std::unique_ptr<sf::Sprite> m_sprite;
@@ -66,5 +78,3 @@ class Player : public sf::Drawable {
 };
 
 }  // namespace somnia
-
-#endif  // SOMNIA_ENTITIES_PLAYER_H
