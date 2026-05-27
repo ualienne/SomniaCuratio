@@ -1,8 +1,7 @@
-#ifndef SOMNIA_CORE_GAME_H
-#define SOMNIA_CORE_GAME_H
+#pragma once
 
-#include <memory>
 #include <SFML/Graphics.hpp>
+#include <memory>
 
 namespace somnia {
 
@@ -21,9 +20,7 @@ class Game {
 
  private:
   void processEvents();
-
   void update(float deltaTime);
-
   void render();
 
   sf::RenderWindow m_window;
@@ -34,5 +31,3 @@ class Game {
 };
 
 }  // namespace somnia
-
-#endif  // SOMNIA_CORE_GAME_H

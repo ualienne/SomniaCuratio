@@ -1,5 +1,4 @@
-#ifndef SOMNIA_CORE_SCENE_MANAGER_H
-#define SOMNIA_CORE_SCENE_MANAGER_H
+#pragma once
 
 #include <SFML/Graphics/RenderWindow.hpp>
 #include <SFML/Window/Event.hpp>
@@ -46,5 +45,3 @@ class SceneManager {
 };
 
 }  // namespace somnia
-
-#endif  // SOMNIA_CORE_SCENE_MANAGER_H
