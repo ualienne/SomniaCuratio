@@ -129,7 +129,7 @@ bool TileMap::loadFromFile(const std::string& tmxPath) {
 
       const std::size_t totalTiles =
           static_cast<std::size_t>(m_mapSize.x) * m_mapSize.y;
-      mesh.vertices.resize(totalTiles * 6);
+      mesh.vertices.resize(totalTiles * m_verticesPerTile);
 
       std::size_t layerTilesetIdx = 0;
       bool tilesetChosen = false;
@@ -142,7 +142,7 @@ bool TileMap::loadFromFile(const std::string& tmxPath) {
               static_cast<std::size_t>(y) * m_mapSize.x + x;
           const unsigned int gid = tiles[tileIdx].ID;
           if (gid == 0) {
-            vertexCursor += 6;
+            vertexCursor += m_verticesPerTile;
             continue;
           }
 
@@ -185,7 +185,7 @@ bool TileMap::loadFromFile(const std::string& tmxPath) {
           v[vertexCursor + 4].texCoords = {tx1, ty1};
           v[vertexCursor + 5].texCoords = {tx0, ty1};
 
-          vertexCursor += 6;
+          vertexCursor += m_verticesPerTile;
         }
       }
 
@@ -232,8 +232,10 @@ bool TileMap::loadFromFile(const std::string& tmxPath) {
 
     const int tx0g = static_cast<int>(ox / m_tileSize.x);
     const int ty0g = static_cast<int>(oy / m_tileSize.y);
-    const int tx1g = static_cast<int>((ox + ow - 0.001f) / m_tileSize.x);
-    const int ty1g = static_cast<int>((oy + oh - 0.001f) / m_tileSize.y);
+    const int tx1g =
+        static_cast<int>((ox + ow - m_collisionEpsilon) / m_tileSize.x);
+    const int ty1g =
+        static_cast<int>((oy + oh - m_collisionEpsilon) / m_tileSize.y);
 
     for (int ty = ty0g; ty <= ty1g; ++ty) {
       for (int tx = tx0g; tx <= tx1g; ++tx) {
@@ -251,7 +253,6 @@ bool TileMap::loadFromFile(const std::string& tmxPath) {
   return true;
 }
 
-// -----------------------------------------------------------------------------
 std::size_t TileMap::findTilesetForGid(unsigned int gid) const {
   std::size_t best = 0;
   unsigned int bestFirst = 0;

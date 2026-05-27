@@ -1,5 +1,4 @@
-#ifndef SOMNIA_WORLD_TILE_MAP_H
-#define SOMNIA_WORLD_TILE_MAP_H
+#pragma once
 
 #include <SFML/Graphics/Drawable.hpp>
 #include <SFML/Graphics/RenderStates.hpp>
@@ -48,7 +47,6 @@ class TileMap : public sf::Drawable {
   }
   const std::vector<MapObject>& doors() const { return m_doors; }
   const std::vector<MapObject>& spawns() const { return m_spawns; }
-
   const MapObject* findSpawn(const std::string& name) const;
 
   void drawBackground(
@@ -60,11 +58,15 @@ class TileMap : public sf::Drawable {
 
  private:
   void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
-
   struct LayerMesh {
     sf::VertexArray vertices{sf::PrimitiveType::Triangles};
     std::size_t tilesetIndex = 0;
   };
+
+  static constexpr unsigned int m_defaultTileWidth = 16u;
+  static constexpr unsigned int m_defaultTileHeight = 16u;
+  static constexpr std::size_t m_verticesPerTile = 6;
+  static constexpr float m_collisionEpsilon = 0.001f;
 
   std::vector<sf::Texture> m_tilesets;
   std::vector<unsigned int> m_tilesetFirstGids;
@@ -75,7 +77,7 @@ class TileMap : public sf::Drawable {
   std::vector<LayerMesh> m_decorAboveMeshes;
 
   sf::Vector2u m_mapSize{0, 0};
-  sf::Vector2u m_tileSize{16, 16};
+  sf::Vector2u m_tileSize{m_defaultTileWidth, m_defaultTileHeight};
 
   std::vector<bool> m_blockedGrid;
 
@@ -89,5 +91,3 @@ class TileMap : public sf::Drawable {
 };
 
 }  // namespace somnia
-
-#endif  // SOMNIA_WORLD_TILE_MAP_H
