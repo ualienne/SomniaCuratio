@@ -1,5 +1,4 @@
-#ifndef SOMNIA_UI_DIALOGUE_MANAGER_H
-#define SOMNIA_UI_DIALOGUE_MANAGER_H
+#pragma once
 
 #include <SFML/Graphics.hpp>
 #include <string>
@@ -31,5 +30,3 @@ class DialogueManager {
 };
 
 }  // namespace somnia
-
-#endif  // SOMNIA_UI_DIALOGUE_MANAGER_H
