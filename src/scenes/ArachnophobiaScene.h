@@ -38,6 +38,53 @@ class ArachnophobiaScene : public Scene {
   void tryEngageBoss();
   void resolveBossAction();
 
+  bool isTileNear(sf::Vector2i a, sf::Vector2i b, int distX, int distY) const;
+
+  static constexpr int m_defaultSpawnTileX = 3;
+  static constexpr int m_defaultSpawnTileY = 3;
+  static constexpr size_t m_spidersReserveCount = 10;
+  static constexpr int m_spiderLoopStart = 1;
+  static constexpr int m_spiderLoopEnd = 8;
+  static constexpr float m_spiderScale = 2.f;
+  static constexpr float m_chestDividerX = 3.f;
+  static constexpr float m_chestDividerY = 3.f;
+
+  static constexpr int m_chestInteractDistX = 3;
+  static constexpr int m_chestInteractDistY = 3;
+  static constexpr int m_chestHealAmount = 3;
+  static constexpr float m_chestFearReduceAmount = 8.f;
+  static constexpr float m_fearTimerMinLimit = 0.f;
+
+  static constexpr int m_playerAttackDistX = 3;
+  static constexpr int m_playerAttackDistY = 3;
+  static constexpr int m_playerAttackDamage = 3;
+
+  static constexpr int m_bossDamageToBoss = 2;
+  static constexpr int m_bossDamageToPlayer = 2;
+  static constexpr float m_bossTalkFearReduce = 5.f;
+
+  static constexpr int m_spiderMonsterTurnDamage = 1;
+  static constexpr int m_spiderNearbyCheckDistX = 1;
+  static constexpr int m_spiderNearbyCheckDistY = 1;
+  static constexpr float m_fearRecoveryMultiplier = 0.5f;
+
+  static constexpr unsigned int m_hudCharacterSizeLarge = 12u;
+  static constexpr unsigned int m_hudCharacterSizeMedium = 10u;
+  static constexpr unsigned int m_hudCharacterSizeSmall = 9u;
+
+  static constexpr float m_hudTextPaddingX = 12.f;
+  static constexpr float m_hudTextPaddingY = 12.f;
+  static constexpr float m_hudHpTextPaddingY = 32.f;
+  static constexpr float m_hudBossHpTextOffsetX = 70.f;
+  static constexpr float m_hudHintPaddingBottom = 20.f;
+  static constexpr float m_hudFearLabelPaddingY = 26.f;
+
+  static constexpr float m_hudBarWidth = 180.f;
+  static constexpr float m_hudBarHeight = 10.f;
+  static constexpr float m_hudBarFillMaxPct = 1.f;
+  static constexpr float m_hudBarOutlineThickness = 1.f;
+  static constexpr float m_viewCenterDivider = 2.f;
+
   sf::RenderWindow& m_window;
   sf::Font m_font;
   bool m_fontLoaded = false;

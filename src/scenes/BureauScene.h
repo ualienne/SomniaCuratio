@@ -1,5 +1,4 @@
-#ifndef SOMNIA_SCENES_BUREAU_SCENE_H
-#define SOMNIA_SCENES_BUREAU_SCENE_H
+#pragma once
 
 #include <SFML/Graphics/Font.hpp>
 #include <SFML/Graphics/Text.hpp>
@@ -28,6 +27,22 @@ class BureauScene : public Scene {
   void onResume() override;
 
  private:
+  static constexpr unsigned int m_helpTextCharacterSize = 12u;
+  static constexpr float m_npcSpriteScale = 4.f;
+
+  static constexpr int m_defaultSpawnTileX = 1;
+  static constexpr int m_defaultSpawnTileY = 1;
+
+  static constexpr int m_vrInteractDistX = 3;
+  static constexpr int m_vrInteractDistY = 7;
+
+  static constexpr int m_npcInteractDistX = 3;
+  static constexpr int m_npcInteractDistY = 3;
+
+  static constexpr float m_helpTextOffsetX = 8.f;
+  static constexpr float m_helpTextOffsetY = 24.f;
+  static constexpr float m_viewCenterDivider = 2.f;
+
   std::optional<Facing> m_nextDirection;
   sf::RenderWindow& m_window;
   SceneManager& m_sceneManager;
@@ -48,5 +63,3 @@ class BureauScene : public Scene {
 };
 
 }  // namespace somnia
-
-#endif  // SOMNIA_SCENES_BUREAU_SCENE_H

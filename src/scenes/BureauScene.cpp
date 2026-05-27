@@ -21,7 +21,8 @@ BureauScene::BureauScene(sf::RenderWindow& window,
   if (m_font.openFromFile("assets/fonts/PressStart2P.ttf")) {
     m_fontLoaded = true;
     m_helpText = std::make_unique<sf::Text>(
-        m_font, "WASD - move   E - interact   ESC - quit", 12u);
+        m_font, "WASD - move   E - interact   ESC - quit",
+        m_helpTextCharacterSize);
     m_helpText->setFillColor(sf::Color(220, 220, 240, 200));
   } else {
     std::cerr << "[BureauScene] font missing\n";
@@ -50,7 +51,7 @@ BureauScene::BureauScene(sf::RenderWindow& window,
       auto npc = std::make_unique<NPC>();
       if (npc->loadTexture(def.texture)) {
         npc->placeAt(sp->position);
-        npc->setScale(4.f);
+        npc->setScale(m_npcSpriteScale);
         npc->setName(def.name);
         npc->setGreeting(def.greeting);
         m_npcs.push_back(std::move(npc));
@@ -70,7 +71,8 @@ BureauScene::BureauScene(sf::RenderWindow& window,
     } else {
       std::cerr << "[BureauScene] spawn '" << m_spawnPointName
                 << "' not found\n";
-      m_player.placeOnTile({1, 1}, Facing::Down);
+      m_player.placeOnTile({m_defaultSpawnTileX, m_defaultSpawnTileY},
+                           Facing::Down);
     }
     m_camera.centerOn(m_player.worldCenter());
   }
@@ -111,7 +113,6 @@ void BureauScene::handleEvent(const sf::Event& event) {
       const auto playerTile = m_player.currentTile();
       const auto ts = m_map.tileSizePixels();
 
-      // --- VR-шлем: ищем сначала в interactables, потом в spawns ----------
       auto tryFindVR = [&]() -> const MapObject* {
         for (const auto& obj : m_map.interactables())
           if (obj.name == "vr_helmet") return &obj;
@@ -125,8 +126,8 @@ void BureauScene::handleEvent(const sf::Event& event) {
         std::cout << "[DEBUG] VR tile=(" << vrX << "," << vrY << ") player=("
                   << playerTile.x << "," << playerTile.y << ")\n";
 
-        if (std::abs(playerTile.x - vrX) <= 3 &&
-            std::abs(playerTile.y - vrY) <= 7) {
+        if (std::abs(playerTile.x - vrX) <= m_vrInteractDistX &&
+            std::abs(playerTile.y - vrY) <= m_vrInteractDistY) {
           m_sceneManager.pushScene(std::make_unique<ArachnophobiaScene>(
               m_window, "player_spawn_default",
               [&mgr = m_sceneManager, this](NightmareOutcome outcome) {
@@ -150,13 +151,12 @@ void BureauScene::handleEvent(const sf::Event& event) {
         std::cerr << "[BureauScene] vr_helmet not found on map!\n";
       }
 
-      // --- NPC диалог ------------------------------------------------------
       for (const auto& npc : m_npcs) {
         const sf::Vector2f pos = npc->position();
         const int npcX = static_cast<int>(pos.x / ts.x);
         const int npcY = static_cast<int>(pos.y / ts.y);
-        if (std::abs(playerTile.x - npcX) <= 3 &&
-            std::abs(playerTile.y - npcY) <= 3) {
+        if (std::abs(playerTile.x - npcX) <= m_npcInteractDistX &&
+            std::abs(playerTile.y - npcY) <= m_npcInteractDistY) {
           dlg.showSingleReplica(npc->name(), npc->greeting());
           break;
         }
@@ -197,13 +197,15 @@ void BureauScene::render(sf::RenderWindow& window) {
   window.setView(window.getDefaultView());
   if (m_fontLoaded && m_helpText) {
     m_helpText->setPosition(
-        {8.f, static_cast<float>(window.getSize().y) - 24.f});
+        {m_helpTextOffsetX,
+         static_cast<float>(window.getSize().y) - m_helpTextOffsetY});
     window.draw(*m_helpText);
   }
 
   const sf::View& cv = m_camera.view();
   const float playerScreenY =
-      (m_player.worldCenter().y - cv.getCenter().y + cv.getSize().y / 2.f) *
+      (m_player.worldCenter().y - cv.getCenter().y +
+       cv.getSize().y / m_viewCenterDivider) *
       (static_cast<float>(window.getSize().y) / cv.getSize().y);
   DialogueManager::instance().draw(window, m_font, playerScreenY);
 }

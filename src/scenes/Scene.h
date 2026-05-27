@@ -1,5 +1,4 @@
-#ifndef SOMNIA_SCENES_SCENE_H
-#define SOMNIA_SCENES_SCENE_H
+#pragma once
 
 #include <SFML/Graphics/RenderWindow.hpp>
 #include <SFML/Window/Event.hpp>
@@ -28,5 +27,3 @@ class Scene {
 };
 
 }  // namespace somnia
-
-#endif  // SOMNIA_SCENES_SCENE_H

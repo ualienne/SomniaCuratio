@@ -7,6 +7,11 @@
 
 namespace somnia {
 
+bool ArachnophobiaScene::isTileNear(sf::Vector2i a, sf::Vector2i b, int distX,
+                                    int distY) const {
+  return std::abs(a.x - b.x) <= distX && std::abs(a.y - b.y) <= distY;
+}
+
 ArachnophobiaScene::ArachnophobiaScene(sf::RenderWindow& window,
                                        const std::string& spawnPointName,
                                        OutcomeCallback onExit)
@@ -36,15 +41,16 @@ ArachnophobiaScene::ArachnophobiaScene(sf::RenderWindow& window,
                             static_cast<int>(sp->position.y / ts.y)},
                            Facing::Down);
     } else {
-      m_player.placeOnTile({3, 3}, Facing::Down);
+      m_player.placeOnTile({m_defaultSpawnTileX, m_defaultSpawnTileY},
+                           Facing::Down);
     }
     m_camera.centerOn(m_player.worldCenter());
   }
 
-  m_spiders.reserve(10);
+  m_spiders.reserve(m_spidersReserveCount);
 
   const auto ts = m_map.tileSizePixels();
-  for (int i = 1; i <= 8; ++i) {
+  for (int i = m_spiderLoopStart; i <= m_spiderLoopEnd; ++i) {
     const std::string spName = "spider_" + std::to_string(i);
     if (const auto* sp = m_map.findSpawn(spName)) {
       auto spider = std::make_unique<Spider>();
@@ -52,7 +58,7 @@ ArachnophobiaScene::ArachnophobiaScene(sf::RenderWindow& window,
         spider->placeOnTile({static_cast<int>(sp->position.x / ts.x),
                              static_cast<int>(sp->position.y / ts.y)},
                             ts);
-        spider->setScale(2.f);
+        spider->setScale(m_spiderScale);
         m_spiders.push_back(std::move(spider));
       }
     }
@@ -68,8 +74,8 @@ ArachnophobiaScene::ArachnophobiaScene(sf::RenderWindow& window,
   for (const auto& obj : m_map.interactables()) {
     if (obj.props.count("type") && obj.props.at("type") == "chest") {
       ChestData chest;
-      chest.position = {obj.position.x + obj.size.x / 3.f,
-                        obj.position.y + obj.size.y / 3.f};
+      chest.position = {obj.position.x + obj.size.x / m_chestDividerX,
+                        obj.position.y + obj.size.y / m_chestDividerY};
       chest.opened = false;
       chest.loot = (obj.name == "chest_1" || obj.name == "chest_3" ||
                     obj.name == "chest_5")
@@ -135,15 +141,16 @@ void ArachnophobiaScene::handleEvent(const sf::Event& event) {
         if (chest.opened) continue;
         const int cx = static_cast<int>(chest.position.x / ts.x);
         const int cy = static_cast<int>(chest.position.y / ts.y);
-        if (std::abs(playerTile.x - cx) <= 3 &&
-            std::abs(playerTile.y - cy) <= 3) {
+        if (isTileNear(playerTile, {cx, cy}, m_chestInteractDistX,
+                       m_chestInteractDistY)) {
           chest.opened = true;
           if (chest.loot == ChestData::LootType::Heal) {
-            m_player.heal(3);
+            m_player.heal(m_chestHealAmount);
             DialogueManager::instance().showSingleReplica(
                 "Сундук", "Ты нашёл бинты.\n+3 HP");
           } else {
-            m_fearTimer = std::max(0.f, m_fearTimer - 8.f);
+            m_fearTimer = std::max(m_fearTimerMinLimit,
+                                   m_fearTimer - m_chestFearReduceAmount);
             DialogueManager::instance().showSingleReplica(
                 "Сундук", "Успокоительное...\nСтрах отступил.");
           }
@@ -158,8 +165,8 @@ void ArachnophobiaScene::handleEvent(const sf::Event& event) {
       for (auto& sp : m_spiders) {
         if (sp->isDead()) continue;
         const auto st = sp->currentTile();
-        if (std::abs(pt.x - st.x) <= 1 && std::abs(pt.y - st.y) <= 1) {
-          sp->takeDamage(3);
+        if (isTileNear(pt, st, m_playerAttackDistX, m_playerAttackDistY)) {
+          sp->takeDamage(m_playerAttackDamage);
           if (sp->isDead()) ++m_spidersKilled;
           m_currentTurn = TurnState::MonstersTurn;
           break;
@@ -190,7 +197,7 @@ void ArachnophobiaScene::resolveBossAction() {
   if (!m_boss) return;
   switch (m_pendingAction) {
     case BattleAction::Attack:
-      m_boss->takeDamage(2);
+      m_boss->takeDamage(m_bossDamageToBoss);
       if (m_boss->isDead()) {
         ++m_spidersKilled;
         DialogueManager::instance().showSingleReplica(
@@ -199,15 +206,13 @@ void ArachnophobiaScene::resolveBossAction() {
             "Ты победил меня... страх отступает...\n"
             "[E] Закрыть");
       } else {
-        m_player.takeDamage(2);
+        m_player.takeDamage(m_bossDamageToPlayer);
         DialogueManager::instance().showSingleReplica(
             "Арахна",
             "Ты осмелился ударить меня?!\n"
             "HP: " +
                 std::to_string(m_boss->hp()) + "/" +
-                std::to_string(m_boss->maxHp()) +
-                "\n"
-                "[E] Закрыть");
+                std::to_string(m_boss->maxHp()) + "\n[E] Закрыть");
       }
       break;
 
@@ -220,7 +225,8 @@ void ArachnophobiaScene::resolveBossAction() {
       break;
 
     case BattleAction::Talk:
-      m_fearTimer = std::max(0.f, m_fearTimer - 5.f);
+      m_fearTimer =
+          std::max(m_fearTimerMinLimit, m_fearTimer - m_bossTalkFearReduce);
       DialogueManager::instance().showSingleReplica("Арахна",
                                                     "Слова... Любопытно.\n"
                                                     "Страх чуть отступил.\n"
@@ -292,16 +298,11 @@ void ArachnophobiaScene::update(float deltaTime) {
       sp->stepTowardPlayer(pt, m_map);
       sp->update(deltaTime, {});
       const auto st = sp->currentTile();
-      if (std::abs(st.x - pt.x) <= 1 && std::abs(st.y - pt.y) <= 1) {
+      if (isTileNear(st, pt, m_spiderNearbyCheckDistX,
+                     m_spiderNearbyCheckDistY)) {
         spiderNearby = true;
-        m_player.takeDamage(1);
+        m_player.takeDamage(m_spiderMonsterTurnDamage);
       }
-    }
-    if (m_boss && !m_boss->isDead()) {
-      const sf::Vector2f diff = m_boss->position() - m_player.worldCenter();
-      if (std::sqrt(diff.x * diff.x + diff.y * diff.y) <
-          m_boss->interactRadius())
-        spiderNearby = true;
     }
     m_currentTurn = TurnState::CheckOutcomes;
   } else {
@@ -309,22 +310,24 @@ void ArachnophobiaScene::update(float deltaTime) {
       if (!sp->isDead()) {
         sp->update(deltaTime, {});
         const auto st = sp->currentTile();
-        if (std::abs(st.x - pt.x) <= 1 && std::abs(st.y - pt.y) <= 1)
+        if (isTileNear(st, pt, m_spiderNearbyCheckDistX,
+                       m_spiderNearbyCheckDistY))
           spiderNearby = true;
       }
     }
-    if (m_boss && !m_boss->isDead()) {
-      const sf::Vector2f diff = m_boss->position() - m_player.worldCenter();
-      if (std::sqrt(diff.x * diff.x + diff.y * diff.y) <
-          m_boss->interactRadius())
-        spiderNearby = true;
-    }
+  }
+
+  if (m_boss && !m_boss->isDead()) {
+    const sf::Vector2f diff = m_boss->position() - m_player.worldCenter();
+    if (std::sqrt(diff.x * diff.x + diff.y * diff.y) < m_boss->interactRadius())
+      spiderNearby = true;
   }
 
   if (spiderNearby)
     m_fearTimer += deltaTime;
   else
-    m_fearTimer = std::max(0.f, m_fearTimer - deltaTime * 0.5f);
+    m_fearTimer = std::max(m_fearTimerMinLimit,
+                           m_fearTimer - deltaTime * m_fearRecoveryMultiplier);
 
   if (m_currentTurn == TurnState::CheckOutcomes) {
     checkOutcome();
@@ -347,57 +350,59 @@ void ArachnophobiaScene::renderHUD(sf::RenderWindow& window) {
   sf::Text spiderCount(m_font);
   spiderCount.setString("Spiders: " +
                         std::to_string(m_spidersTotal - m_spidersKilled));
-  spiderCount.setCharacterSize(12u);
+  spiderCount.setCharacterSize(m_hudCharacterSizeLarge);
   spiderCount.setFillColor(sf::Color(220, 180, 255));
-  spiderCount.setPosition({12.f, 12.f});
+  spiderCount.setPosition({m_hudTextPaddingX, m_hudTextPaddingY});
   window.draw(spiderCount);
 
   sf::Text hpText(m_font);
   hpText.setString("HP: " + std::to_string(m_player.getHP()) + " / " +
                    std::to_string(m_player.getMaxHP()));
-  hpText.setCharacterSize(12u);
+  hpText.setCharacterSize(m_hudCharacterSizeLarge);
   hpText.setFillColor(sf::Color(255, 90, 90));
-  hpText.setPosition({12.f, 32.f});
+  hpText.setPosition({m_hudTextPaddingX, m_hudHpTextPaddingY});
   window.draw(hpText);
 
   if (m_boss && !m_boss->isDead()) {
     sf::Text bossHp(m_font);
     bossHp.setString("ARACHNA: " + std::to_string(m_boss->hp()) + "/" +
                      std::to_string(m_boss->maxHp()));
-    bossHp.setCharacterSize(10u);
+    bossHp.setCharacterSize(m_hudCharacterSizeMedium);
     bossHp.setFillColor(sf::Color(255, 80, 120));
-    bossHp.setPosition({winW / 2.f - 70.f, 12.f});
+    bossHp.setPosition({winW / m_viewCenterDivider - m_hudBossHpTextOffsetX,
+                        m_hudTextPaddingY});
     window.draw(bossHp);
   }
 
   sf::Text hint(m_font);
   hint.setString("WASD-move  SPACE-attack  E-interact");
-  hint.setCharacterSize(9u);
+  hint.setCharacterSize(m_hudCharacterSizeSmall);
   hint.setFillColor(sf::Color(180, 160, 200, 180));
-  hint.setPosition({12.f, winH - 20.f});
+  hint.setPosition({m_hudTextPaddingX, winH - m_hudHintPaddingBottom});
   window.draw(hint);
 
-  const float barW = 180.f;
-  const float barH = 10.f;
-  const float fearPct = std::min(m_fearTimer / m_fearMax, 1.f);
+  const float fearPct = std::min(m_fearTimer / m_fearMax, m_hudBarFillMaxPct);
 
-  sf::RectangleShape barBg({barW, barH});
+  sf::RectangleShape barBg({m_hudBarWidth, m_hudBarHeight});
   barBg.setFillColor(sf::Color(30, 10, 30, 200));
   barBg.setOutlineColor(sf::Color(160, 80, 200));
-  barBg.setOutlineThickness(1.f);
-  barBg.setPosition({winW - barW - 12.f, 12.f});
+  barBg.setOutlineThickness(m_hudBarOutlineThickness);
+  barBg.setPosition(
+      {winW - m_hudBarWidth - m_hudTextPaddingX, m_hudTextPaddingY});
   window.draw(barBg);
 
-  sf::RectangleShape barFill({barW * fearPct, barH});
+  sf::RectangleShape barFill({m_hudBarWidth * fearPct, m_hudBarHeight});
   barFill.setFillColor(sf::Color(200, 50, 200, 220));
-  barFill.setPosition({winW - barW - 12.f, 12.f});
+  barFill.setPosition(
+      {winW - m_hudBarWidth - m_hudTextPaddingX, m_hudTextPaddingY});
   window.draw(barFill);
 
   sf::Text fearLabel(m_font);
   fearLabel.setString("LUCIDITY");
-  fearLabel.setCharacterSize(9u);
+  fearLabel.setCharacterSize(m_hudCharacterSizeSmall);
   fearLabel.setFillColor(sf::Color(200, 150, 255, 200));
-  fearLabel.setPosition({winW - barW - 12.f, 26.f});
+  fearLabel.setPosition(
+      {winW - m_hudBarWidth - m_hudTextPaddingX, m_hudFearLabelPaddingY});
   window.draw(fearLabel);
 }
 
@@ -419,7 +424,7 @@ void ArachnophobiaScene::render(sf::RenderWindow& window) {
   const sf::Vector2f wc = m_player.worldCenter();
   const sf::Vector2f vc = cv.getCenter();
   const sf::Vector2f vs = cv.getSize();
-  const float playerScreenY = (wc.y - vc.y + vs.y / 2.f) *
+  const float playerScreenY = (wc.y - vc.y + vs.y / m_viewCenterDivider) *
                               (static_cast<float>(window.getSize().y) / vs.y);
 
   DialogueManager::instance().draw(window, m_font, playerScreenY);
