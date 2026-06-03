@@ -15,6 +15,7 @@
 #include "ui/DialogueManager.h"
 #include "world/Camera.h"
 #include "world/TileMap.h"
+#include "ui/Inventory.h"
 
 namespace somnia {
 
@@ -125,6 +126,7 @@ class ArachnophobiaScene : public Scene {
     enum class LootType { Heal, FearReduce } loot;
   };
   std::vector<ChestData> m_chests;
+  Inventory m_inventory;
 };
 
 }  // namespace somnia

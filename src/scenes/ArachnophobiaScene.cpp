@@ -87,6 +87,12 @@ ArachnophobiaScene::ArachnophobiaScene(sf::RenderWindow& window,
 }
 
 void ArachnophobiaScene::handleEvent(const sf::Event& event) {
+
+    m_inventory.handleEvent(event, m_player, m_fearTimer, m_fearTimerMinLimit, m_chestFearReduceAmount);
+
+    if (m_inventory.isOpen()) {
+        return;
+    }
   if (const auto* key = event.getIf<sf::Event::KeyPressed>()) {
     if (DialogueManager::instance().isVisible()) {
       BattleAction chosen = BattleAction::None;
@@ -133,30 +139,31 @@ void ArachnophobiaScene::handleEvent(const sf::Event& event) {
 
     if (key->code == sf::Keyboard::Key::E &&
         m_currentTurn == TurnState::PlayerTurn) {
-      tryEngageBoss();
+        tryEngageBoss();
 
-      const auto playerTile = m_player.currentTile();
-      const auto ts = m_map.tileSizePixels();
-      for (auto& chest : m_chests) {
-        if (chest.opened) continue;
-        const int cx = static_cast<int>(chest.position.x / ts.x);
-        const int cy = static_cast<int>(chest.position.y / ts.y);
-        if (isTileNear(playerTile, {cx, cy}, m_chestInteractDistX,
-                       m_chestInteractDistY)) {
-          chest.opened = true;
-          if (chest.loot == ChestData::LootType::Heal) {
-            m_player.heal(m_chestHealAmount);
-            DialogueManager::instance().showSingleReplica(
-                "Сундук", "Ты нашёл бинты.\n+3 HP");
-          } else {
-            m_fearTimer = std::max(m_fearTimerMinLimit,
-                                   m_fearTimer - m_chestFearReduceAmount);
-            DialogueManager::instance().showSingleReplica(
-                "Сундук", "Успокоительное...\nСтрах отступил.");
-          }
-          break;
+        const auto playerTile = m_player.currentTile();
+        const auto ts = m_map.tileSizePixels();
+        for (auto& chest : m_chests) {
+            if (chest.opened) continue;
+            const int cx = static_cast<int>(chest.position.x / ts.x);
+            const int cy = static_cast<int>(chest.position.y / ts.y);
+            if (isTileNear(playerTile, { cx, cy }, m_chestInteractDistX,
+                m_chestInteractDistY)) {
+                chest.opened = true;
+
+                if (chest.loot == ChestData::LootType::Heal) {
+                    m_inventory.addItem(Inventory::ItemType::Heal);
+                    DialogueManager::instance().showSingleReplica(
+                        "Сундук", "Ты нашёл бинты.\nОни добавлены в инвентарь [F].");
+                }
+                else {
+                    m_inventory.addItem(Inventory::ItemType::FearReduce);
+                    DialogueManager::instance().showSingleReplica(
+                        "Сундук", "Успокоительное...\nДобавлено в инвентарь [F].");
+                }
+                break;
+            }
         }
-      }
     }
 
     if (key->code == sf::Keyboard::Key::Space &&
@@ -268,10 +275,10 @@ void ArachnophobiaScene::checkOutcome() {
 }
 
 void ArachnophobiaScene::update(float deltaTime) {
-  if (!m_mapReady || m_finished) return;
-  if (DialogueManager::instance().isVisible()) return;
-
-  if (m_currentTurn == TurnState::PlayerTurn) {
+    if (!m_mapReady || m_finished) return;
+    if (DialogueManager::instance().isVisible()) return;
+    if (m_inventory.isOpen()) return;
+    if (m_currentTurn == TurnState::PlayerTurn) {
     if (!m_player.isMoving() && m_nextDirection.has_value()) {
       m_player.tryStartStep(m_nextDirection.value(), m_map);
       m_nextDirection.reset();
@@ -407,27 +414,29 @@ void ArachnophobiaScene::renderHUD(sf::RenderWindow& window) {
 }
 
 void ArachnophobiaScene::render(sf::RenderWindow& window) {
-  window.clear(sf::Color(8, 5, 18));
-  if (!m_mapReady) return;
+    window.clear(sf::Color(8, 5, 18));
+    if (!m_mapReady) return;
 
-  window.setView(m_camera.view());
-  m_map.drawBackground(window);
-  for (const auto& sp : m_spiders) window.draw(*sp);
-  if (m_boss) window.draw(*m_boss);
-  window.draw(m_player);
-  m_map.drawDecorAbove(window);
+    window.setView(m_camera.view());
+    m_map.drawBackground(window);
+    for (const auto& sp : m_spiders) window.draw(*sp);
+    if (m_boss) window.draw(*m_boss);
+    window.draw(m_player);
+    m_map.drawDecorAbove(window);
 
-  window.setView(window.getDefaultView());
-  renderHUD(window);
+    window.setView(window.getDefaultView());
+    renderHUD(window);
 
-  const sf::View& cv = m_camera.view();
-  const sf::Vector2f wc = m_player.worldCenter();
-  const sf::Vector2f vc = cv.getCenter();
-  const sf::Vector2f vs = cv.getSize();
-  const float playerScreenY = (wc.y - vc.y + vs.y / m_viewCenterDivider) *
-                              (static_cast<float>(window.getSize().y) / vs.y);
+    m_inventory.render(window, m_font);
 
-  DialogueManager::instance().draw(window, m_font, playerScreenY);
+    const sf::View& cv = m_camera.view();
+    const sf::Vector2f wc = m_player.worldCenter();
+    const sf::Vector2f vc = cv.getCenter();
+    const sf::Vector2f vs = cv.getSize();
+    const float playerScreenY = (wc.y - vc.y + vs.y / m_viewCenterDivider) *
+        (static_cast<float>(window.getSize().y) / vs.y);
+
+    DialogueManager::instance().draw(window, m_font, playerScreenY);
 }
 
 }  // namespace somnia
