@@ -13,6 +13,7 @@
 #include "scenes/Scene.h"
 #include "world/Camera.h"
 #include "world/TileMap.h"
+#include "scenes/BureauAssets.h"
 
 namespace somnia {
 
@@ -60,6 +61,8 @@ namespace somnia {
 
         bool m_mapReady = false;
         std::string m_pendingMessage;
+
+        assets::bureau::BureauData m_assets;
     };
 
 }  // namespace somnia

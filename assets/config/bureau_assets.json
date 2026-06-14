@@ -1,0 +1,31 @@
+{
+  "paths": {
+    "font_path": "assets/fonts/PressStart2P.ttf",
+    "map_path": "assets/maps/bureau.tmx",
+    "player_texture": "assets/sprites/characters/agent.png"
+  },
+  "npcs": {
+    "voss": {
+      "texture": "assets/sprites/characters/voss.png",
+      "name": "Dr. Emil Voss",
+      "greeting": "Ты как бледная поганка. Кошмарики задрали?"
+    },
+    "kira": {
+      "texture": "assets/sprites/characters/kira.png",
+      "name": "Kira",
+      "greeting": "Клац-клац.."
+    },
+    "hayes": {
+      "texture": "assets/sprites/characters/hayes.png",
+      "name": "Hayes",
+      "greeting": "Не трогай мои файлы."
+    }
+  },
+  "system": {
+    "help_text": "WASD - move   E - interact   ESC - quit",
+    "sys_title": "Система",
+    "msg_therapy": "Кошмар побеждён.\nСтрах отступил.",
+    "msg_failure": "Кошмар поглотил тебя...\nНо ты проснулась.",
+    "msg_neutral": "Ты сбежала из кошмара.\nСтрах остался."
+  }
+}

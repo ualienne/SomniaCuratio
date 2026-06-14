@@ -110,7 +110,7 @@ set(SOMNIA_HEADERS
 # печатать отладку (std::cout/std::cerr). Чтобы в релизной версии спрятать
 # консоль, можно будет позже либо написать WinMain-обёртку, либо добавить
 # WIN32 + линкер-флаг /ENTRY:mainCRTStartup.
-add_executable(SomniaCuratio ${SOMNIA_SOURCES} ${SOMNIA_HEADERS} "src/ui/Inventory.h" "src/ui/Inventory.cpp" "src/scenes/ArchnophobiaAssets.h" "src/scenes/BureauAssets.h")
+add_executable(SomniaCuratio ${SOMNIA_SOURCES} ${SOMNIA_HEADERS} "src/ui/Inventory.h" "src/ui/Inventory.cpp" "src/scenes/ArachnophobiaAssets.h" "src/scenes/BureauAssets.h")
 
 # --- Пути и линковка -------------------------------------------------------
 # include директория для наших заголовков

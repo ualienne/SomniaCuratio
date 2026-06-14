@@ -11,11 +11,12 @@
 #include "entities/BossSpider.h"
 #include "entities/Player.h"
 #include "entities/Spider.h"
+#include "scenes/ArachnophobiaAssets.h"
 #include "scenes/Scene.h"
 #include "ui/DialogueManager.h"
+#include "ui/Inventory.h"
 #include "world/Camera.h"
 #include "world/TileMap.h"
-#include "ui/Inventory.h"
 
 namespace somnia {
 
@@ -125,6 +126,8 @@ namespace somnia {
         };
         std::vector<ChestData> m_chests;
         Inventory m_inventory;
+
+        assets::ArachnophobiaData m_assets;
     };
 
 }  // namespace somnia

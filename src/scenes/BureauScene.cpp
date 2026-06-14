@@ -1,5 +1,4 @@
 #include "scenes/BureauScene.h"
-#include "scenes/BureauAssets.h"
 
 #include <SFML/Graphics.hpp>
 #include <SFML/Window/Keyboard.hpp>
@@ -20,17 +19,19 @@ namespace somnia {
                   static_cast<float>(window.getSize().y) }),
         m_spawnPointName(spawnPointName) {
 
-        if (m_font.openFromFile(assets::FontPath)) {
+        m_assets.loadFromFile("assets/config/bureau_assets.json");
+
+        if (m_font.openFromFile(m_assets.fontPath)) {
             m_fontLoaded = true;
             m_helpText = std::make_unique<sf::Text>(
-                m_font, assets::HelpText, m_helpTextCharacterSize);
+                m_font, m_assets.helpText, m_helpTextCharacterSize);
             m_helpText->setFillColor(sf::Color(220, 220, 240, 200));
         }
         else {
             std::cerr << "[BureauScene] font missing\n";
         }
 
-        if (m_map.loadFromFile(assets::MapPath)) {
+        if (m_map.loadFromFile(m_assets.mapPath)) {
             m_mapReady = true;
             m_camera.setWorldSize(m_map.mapSizePixels());
             m_player.setTileSize(m_map.tileSizePixels());
@@ -44,12 +45,9 @@ namespace somnia {
         };
 
         const std::vector<NpcDef> npcDefs = {
-            {"npc_voss", assets::NpcVossTexture, assets::NpcVossName,
-             assets::NpcVossGreeting},
-            {"npc_kira", assets::NpcKiraTexture, assets::NpcKiraName,
-             assets::NpcKiraGreeting},
-            {"npc_hayes", assets::NpcHayesTexture, assets::NpcHayesName,
-             assets::NpcHayesGreeting},
+            {"npc_voss", m_assets.voss.texture, m_assets.voss.name, m_assets.voss.greeting},
+            {"npc_kira", m_assets.kira.texture, m_assets.kira.name, m_assets.kira.greeting},
+            {"npc_hayes", m_assets.hayes.texture, m_assets.hayes.name, m_assets.hayes.greeting},
         };
 
         for (const auto& def : npcDefs) {
@@ -65,8 +63,8 @@ namespace somnia {
             }
         }
 
-        if (!m_player.loadTexture(assets::PlayerTexture))
-            std::cerr << "[BureauScene] agent.png not loaded\n";
+        if (!m_player.loadTexture(m_assets.playerTexture))
+            std::cerr << "[BureauScene] player sprite missing\n";
 
         if (m_mapReady) {
             if (const auto* sp = m_map.findSpawn(m_spawnPointName)) {
@@ -87,7 +85,7 @@ namespace somnia {
 
     void BureauScene::onResume() {
         if (!m_pendingMessage.empty()) {
-            DialogueManager::instance().showSingleReplica(assets::SysTitle, m_pendingMessage);
+            DialogueManager::instance().showSingleReplica(m_assets.sysTitle, m_pendingMessage);
             m_pendingMessage.clear();
         }
     }
@@ -133,8 +131,6 @@ namespace somnia {
                 if (const auto* vr = tryFindVR()) {
                     const int vrX = static_cast<int>(vr->position.x / ts.x);
                     const int vrY = static_cast<int>(vr->position.y / ts.y);
-                    std::cout << "[DEBUG] VR tile=(" << vrX << "," << vrY << ") player=("
-                        << playerTile.x << "," << playerTile.y << ")\n";
 
                     if (std::abs(playerTile.x - vrX) <= m_vrInteractDistX &&
                         std::abs(playerTile.y - vrY) <= m_vrInteractDistY) {
@@ -143,22 +139,19 @@ namespace somnia {
                             [&mgr = m_sceneManager, this](NightmareOutcome outcome) {
                                 switch (outcome) {
                                 case NightmareOutcome::Therapy:
-                                    m_pendingMessage = assets::MsgTherapy;
+                                    m_pendingMessage = m_assets.msgTherapy;
                                     break;
                                 case NightmareOutcome::Failure:
-                                    m_pendingMessage = assets::MsgFailure;
+                                    m_pendingMessage = m_assets.msgFailure;
                                     break;
                                 case NightmareOutcome::Neutral:
-                                    m_pendingMessage = assets::MsgNeutral;
+                                    m_pendingMessage = m_assets.msgNeutral;
                                     break;
                                 }
                                 mgr.popScene();
                             }));
                         return;
                     }
-                }
-                else {
-                    std::cerr << "[BureauScene] vr_helmet not found on map!\n";
                 }
 
                 for (const auto& npc : m_npcs) {

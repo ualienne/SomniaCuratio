@@ -1,5 +1,4 @@
 #include "scenes/ArachnophobiaScene.h"
-#include "scenes/ArachnophobiaAssets.h" // Подключаем файл ассетов
 
 #include <SFML/Window/Keyboard.hpp>
 #include <algorithm>
@@ -22,22 +21,24 @@ namespace somnia {
         m_spawnPointName(spawnPointName),
         m_onExit(std::move(onExit)) {
 
-        // Использование путей из ассетов
-        if (m_font.openFromFile(assets::FontPath))
+        // Загружаем JSON ресурсы при старте сцены
+        m_assets.loadFromFile("assets/config/arachnophobia_assets.json");
+
+        if (m_font.openFromFile(m_assets.fontPath))
             m_fontLoaded = true;
         else
             std::cerr << "[ArachnophobiaScene] font missing\n";
 
-        if (m_map.loadFromFile(assets::MapPath)) {
+        if (m_map.loadFromFile(m_assets.mapPath)) {
             m_mapReady = true;
             m_camera.setWorldSize(m_map.mapSizePixels());
             m_player.setTileSize(m_map.tileSizePixels());
         }
         else {
-            std::cerr << "[ArachnophobiaScene] FAILED to load arachnophobia.tmx\n";
+            std::cerr << "[ArachnophobiaScene] FAILED to load map\n";
         }
 
-        m_player.loadTexture(assets::PlayerTexture);
+        m_player.loadTexture(m_assets.playerTexture);
         if (m_mapReady) {
             const auto ts = m_map.tileSizePixels();
             if (const auto* sp = m_map.findSpawn(m_spawnPointName)) {
@@ -59,7 +60,7 @@ namespace somnia {
             const std::string spName = "spider_" + std::to_string(i);
             if (const auto* sp = m_map.findSpawn(spName)) {
                 auto spider = std::make_unique<Spider>();
-                if (spider->loadTexture(assets::SpiderTexture)) {
+                if (spider->loadTexture(m_assets.spiderTexture)) {
                     spider->placeOnTile({ static_cast<int>(sp->position.x / ts.x),
                                          static_cast<int>(sp->position.y / ts.y) },
                         ts);
@@ -158,12 +159,12 @@ namespace somnia {
                         if (chest.loot == ChestData::LootType::Heal) {
                             m_inventory.addItem(Inventory::ItemType::Heal);
                             DialogueManager::instance().showSingleReplica(
-                                assets::ChestTitle, assets::ChestHealMsg);
+                                m_assets.chestTitle, m_assets.chestHealMsg);
                         }
                         else {
                             m_inventory.addItem(Inventory::ItemType::FearReduce);
                             DialogueManager::instance().showSingleReplica(
-                                assets::ChestTitle, assets::ChestFearMsg);
+                                m_assets.chestTitle, m_assets.chestFearMsg);
                         }
                         break;
                     }
@@ -175,8 +176,8 @@ namespace somnia {
                 const auto pt = m_player.currentTile();
                 for (auto& sp : m_spiders) {
                     if (sp->isDead()) continue;
-                    const auto st = sp->currentTile();
-                    if (isTileNear(pt, st, m_playerAttackDistX, m_playerAttackDistY)) {
+                    const auto mt = sp->currentTile();
+                    if (isTileNear(pt, mt, m_playerAttackDistX, m_playerAttackDistY)) {
                         sp->takeDamage(m_playerAttackDamage);
                         if (sp->isDead()) ++m_spidersKilled;
                         m_currentTurn = TurnState::MonstersTurn;
@@ -196,7 +197,7 @@ namespace somnia {
         if (dist <= m_boss->interactRadius()) {
             m_bossEngaged = true;
             DialogueManager::instance().showSingleReplica(
-                assets::BossName, assets::BossEngageMsg);
+                m_assets.bossName, m_assets.bossEngageMsg);
         }
     }
 
@@ -208,13 +209,13 @@ namespace somnia {
             if (m_boss->isDead()) {
                 ++m_spidersKilled;
                 DialogueManager::instance().showSingleReplica(
-                    assets::BossName, assets::BossDeathMsg);
+                    m_assets.bossName, m_assets.bossDeathMsg);
             }
             else {
                 m_player.takeDamage(m_bossDamageToPlayer);
                 DialogueManager::instance().showSingleReplica(
-                    assets::BossName,
-                    assets::BossHitMsg +
+                    m_assets.bossName,
+                    m_assets.bossHitMsg +
                     std::to_string(m_boss->hp()) + "/" +
                     std::to_string(m_boss->maxHp()) + "\n[E] Закрыть");
             }
@@ -222,14 +223,14 @@ namespace somnia {
 
         case BattleAction::Dodge:
             DialogueManager::instance().showSingleReplica(
-                assets::BossName, assets::BossDodgeMsg);
+                m_assets.bossName, m_assets.bossDodgeMsg);
             break;
 
         case BattleAction::Talk:
             m_fearTimer =
                 std::max(m_fearTimerMinLimit, m_fearTimer - m_bossTalkFearReduce);
             DialogueManager::instance().showSingleReplica(
-                assets::BossName, assets::BossTalkMsg);
+                m_assets.bossName, m_assets.bossTalkMsg);
             break;
 
         default:
@@ -376,7 +377,7 @@ namespace somnia {
         }
 
         sf::Text hint(m_font);
-        hint.setString(assets::HUDHintText);
+        hint.setString(m_assets.hudHintText);
         hint.setCharacterSize(m_hudCharacterSizeSmall);
         hint.setFillColor(sf::Color(180, 160, 200, 180));
         hint.setPosition({ m_hudTextPaddingX, winH - m_hudHintPaddingBottom });

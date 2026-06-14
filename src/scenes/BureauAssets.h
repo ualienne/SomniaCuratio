@@ -1,33 +1,73 @@
 #pragma once
+
+#include <fstream>
+#include <iostream>
+#include <nlohmann/json.hpp>
 #include <string>
 
 namespace somnia {
 namespace assets {
+namespace bureau {
 
-inline const std::string FontPath = "assets/fonts/PressStart2P.ttf";
-inline const std::string MapPath = "assets/maps/bureau.tmx";
-inline const std::string PlayerTexture = "assets/sprites/characters/agent.png";
+struct NpcConfig {
+  std::string texture;
+  std::string name;
+  std::string greeting;
+};
 
-inline const std::string NpcVossTexture = "assets/sprites/characters/voss.png";
-inline const std::string NpcVossName = "Dr. Emil Voss";
-inline const std::string NpcVossGreeting =
-    "Ты как бледная поганка. Кошмарики задрали?";
+struct BureauData {
+  std::string fontPath;
+  std::string mapPath;
+  std::string playerTexture;
 
-inline const std::string NpcKiraTexture = "assets/sprites/characters/kira.png";
-inline const std::string NpcKiraName = "Kira";
-inline const std::string NpcKiraGreeting = "Клац-клац..";
+  NpcConfig voss;
+  NpcConfig kira;
+  NpcConfig hayes;
 
-inline const std::string NpcHayesTexture =
-    "assets/sprites/characters/hayes.png";
-inline const std::string NpcHayesName = "Hayes";
-inline const std::string NpcHayesGreeting = "Не трогай мои файлы.";
+  std::string helpText;
+  std::string sysTitle;
+  std::string msgTherapy;
+  std::string msgFailure;
+  std::string msgNeutral;
 
-inline const std::string HelpText = "WASD - move   E - interact   ESC - quit";
-inline const std::string SysTitle = "Система";
-inline const std::string MsgTherapy = "Кошмар побеждён.\nСтрах отступил.";
-inline const std::string MsgFailure =
-    "Кошмар поглотил тебя...\nНо ты проснулась.";
-inline const std::string MsgNeutral = "Ты сбежала из кошмара.\nСтрах остался.";
+  bool loadFromFile(const std::string& filename) {
+    std::ifstream file(filename);
+    if (!file.is_open()) {
+      std::cerr << "[BureauAssets] Failed to open " << filename << "\n";
+      return false;
+    }
+    try {
+      nlohmann::json j;
+      file >> j;
 
+      fontPath = j["paths"]["font_path"].get<std::string>();
+      mapPath = j["paths"]["map_path"].get<std::string>();
+      playerTexture = j["paths"]["player_texture"].get<std::string>();
+
+      auto loadNpc = [](const nlohmann::json& node) {
+        return NpcConfig{node["texture"].get<std::string>(),
+                         node["name"].get<std::string>(),
+                         node["greeting"].get<std::string>()};
+      };
+
+      voss = loadNpc(j["npcs"]["voss"]);
+      kira = loadNpc(j["npcs"]["kira"]);
+      hayes = loadNpc(j["npcs"]["hayes"]);
+
+      helpText = j["system"]["help_text"].get<std::string>();
+      sysTitle = j["system"]["sys_title"].get<std::string>();
+      msgTherapy = j["system"]["msg_therapy"].get<std::string>();
+      msgFailure = j["system"]["msg_failure"].get<std::string>();
+      msgNeutral = j["system"]["msg_neutral"].get<std::string>();
+
+      return true;
+    } catch (const std::exception& e) {
+      std::cerr << "[BureauAssets] JSON parse error: " << e.what() << "\n";
+      return false;
+    }
+  }
+};
+
+}  // namespace bureau
 }  // namespace assets
 }  // namespace somnia
