@@ -20,17 +20,17 @@ namespace somnia {
                   static_cast<float>(window.getSize().y) }),
         m_spawnPointName(spawnPointName) {
 
-        if (m_font.openFromFile(assets::bureau::FontPath)) {
+        if (m_font.openFromFile(assets::FontPath)) {
             m_fontLoaded = true;
             m_helpText = std::make_unique<sf::Text>(
-                m_font, assets::bureau::HelpText, m_helpTextCharacterSize);
+                m_font, assets::HelpText, m_helpTextCharacterSize);
             m_helpText->setFillColor(sf::Color(220, 220, 240, 200));
         }
         else {
             std::cerr << "[BureauScene] font missing\n";
         }
 
-        if (m_map.loadFromFile(assets::bureau::MapPath)) {
+        if (m_map.loadFromFile(assets::MapPath)) {
             m_mapReady = true;
             m_camera.setWorldSize(m_map.mapSizePixels());
             m_player.setTileSize(m_map.tileSizePixels());
@@ -44,12 +44,12 @@ namespace somnia {
         };
 
         const std::vector<NpcDef> npcDefs = {
-            {"npc_voss", assets::bureau::NpcVossTexture, assets::bureau::NpcVossName,
-             assets::bureau::NpcVossGreeting},
-            {"npc_kira", assets::bureau::NpcKiraTexture, assets::bureau::NpcKiraName,
-             assets::bureau::NpcKiraGreeting},
-            {"npc_hayes", assets::bureau::NpcHayesTexture, assets::bureau::NpcHayesName,
-             assets::bureau::NpcHayesGreeting},
+            {"npc_voss", assets::NpcVossTexture, assets::NpcVossName,
+             assets::NpcVossGreeting},
+            {"npc_kira", assets::NpcKiraTexture, assets::NpcKiraName,
+             assets::NpcKiraGreeting},
+            {"npc_hayes", assets::NpcHayesTexture, assets::NpcHayesName,
+             assets::NpcHayesGreeting},
         };
 
         for (const auto& def : npcDefs) {
@@ -65,7 +65,7 @@ namespace somnia {
             }
         }
 
-        if (!m_player.loadTexture(assets::bureau::PlayerTexture))
+        if (!m_player.loadTexture(assets::PlayerTexture))
             std::cerr << "[BureauScene] agent.png not loaded\n";
 
         if (m_mapReady) {
@@ -87,7 +87,7 @@ namespace somnia {
 
     void BureauScene::onResume() {
         if (!m_pendingMessage.empty()) {
-            DialogueManager::instance().showSingleReplica(assets::bureau::SysTitle, m_pendingMessage);
+            DialogueManager::instance().showSingleReplica(assets::SysTitle, m_pendingMessage);
             m_pendingMessage.clear();
         }
     }
@@ -143,13 +143,13 @@ namespace somnia {
                             [&mgr = m_sceneManager, this](NightmareOutcome outcome) {
                                 switch (outcome) {
                                 case NightmareOutcome::Therapy:
-                                    m_pendingMessage = assets::bureau::MsgTherapy;
+                                    m_pendingMessage = assets::MsgTherapy;
                                     break;
                                 case NightmareOutcome::Failure:
-                                    m_pendingMessage = assets::bureau::MsgFailure;
+                                    m_pendingMessage = assets::MsgFailure;
                                     break;
                                 case NightmareOutcome::Neutral:
-                                    m_pendingMessage = assets::bureau::MsgNeutral;
+                                    m_pendingMessage = assets::MsgNeutral;
                                     break;
                                 }
                                 mgr.popScene();
