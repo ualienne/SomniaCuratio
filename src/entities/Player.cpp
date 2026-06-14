@@ -109,8 +109,6 @@ void Player::refreshSprite() {
   m_sprite->setPosition(world);
 }
 
-// —сылки RenderTarget и RenderStates об€зательны дл€ переопределени€
-// виртуального метода sf::Drawable::draw
 void Player::draw(sf::RenderTarget& target, sf::RenderStates states) const {
   if (m_sprite) target.draw(*m_sprite, states);
 }

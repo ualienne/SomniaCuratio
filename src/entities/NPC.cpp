@@ -31,8 +31,6 @@ void NPC::setScale(float scale) {
   if (m_sprite) m_sprite->setScale({scale, scale});
 }
 
-// —сылки RenderTarget и RenderStates об€зательны дл€ переопределени€
-// виртуального метода sf::Drawable::draw
 void NPC::draw(sf::RenderTarget& target, sf::RenderStates states) const {
   if (m_sprite) target.draw(*m_sprite, states);
 }

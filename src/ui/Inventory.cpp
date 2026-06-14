@@ -134,16 +134,4 @@ bool Inventory::saveToFile(const std::string& filename) const {
   return true;
 }
 
-bool Inventory::loadFromFile(const std::string& filename) {
-  std::ifstream file(filename);
-  if (!file.is_open()) return false;
-
-  m_items.clear();
-  int itemVal;
-  while (file >> itemVal) {
-    m_items.push_back(static_cast<ItemType>(itemVal));
-  }
-  return true;
-}
-
 }  // namespace somnia

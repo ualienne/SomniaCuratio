@@ -87,8 +87,6 @@ bool Spider::takeDamage(int dmg) {
   return isDead();
 }
 
-// —сылки RenderTarget и RenderStates об€зательны дл€ переопределени€
-// виртуального метода sf::Drawable::draw
 void Spider::draw(sf::RenderTarget& target, sf::RenderStates states) const {
   if (m_sprite && !isDead()) target.draw(*m_sprite, states);
 }
