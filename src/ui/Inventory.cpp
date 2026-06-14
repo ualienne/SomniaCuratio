@@ -124,14 +124,4 @@ void Inventory::render(sf::RenderWindow& window, const sf::Font& font) const {
   window.draw(hint);
 }
 
-bool Inventory::saveToFile(const std::string& filename) const {
-  std::ofstream file(filename);
-  if (!file.is_open()) return false;
-
-  for (const auto& item : m_items) {
-    file << static_cast<int>(item) << "\n";
-  }
-  return true;
-}
-
 }  // namespace somnia
