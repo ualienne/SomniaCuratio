@@ -11,9 +11,9 @@
 #include "entities/NPC.h"
 #include "entities/Player.h"
 #include "scenes/Scene.h"
+#include "scenes/BureauAssets.h"
 #include "world/Camera.h"
 #include "world/TileMap.h"
-#include "scenes/BureauAssets.h"
 
 namespace somnia {
 
