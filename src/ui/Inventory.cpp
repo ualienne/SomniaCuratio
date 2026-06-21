@@ -110,7 +110,8 @@ void Inventory::render(sf::RenderWindow& window, const sf::Font& font) const {
 
       itemText.setCharacterSize(m_charSize);
       itemText.setPosition(
-          {boxX + m_paddingX, boxY + m_paddingY + 35.f + (i * m_itemSpacing)});
+          {boxX + m_paddingX,
+           boxY + m_paddingY + 35.f + (static_cast<float>(i) * m_itemSpacing)});
       window.draw(itemText);
     }
   }
