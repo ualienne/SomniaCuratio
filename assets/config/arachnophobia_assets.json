@@ -1,31 +1,21 @@
 {
   "paths": {
     "font_path": "assets/fonts/PressStart2P.ttf",
-    "map_path": "assets/maps/bureau.tmx",
-    "player_texture": "assets/sprites/characters/agent.png"
+    "map_path": "assets/maps/arachnophobia.tmx",
+    "player_texture": "assets/sprites/characters/agent.png",
+    "spider_texture": "assets/sprites/enemies/spider.png"
   },
-  "npcs": {
-    "voss": {
-      "texture": "assets/sprites/characters/voss.png",
-      "name": "Dr. Emil Voss",
-      "greeting": "Ты как бледная поганка. Кошмарики задрали?"
-    },
-    "kira": {
-      "texture": "assets/sprites/characters/kira.png",
-      "name": "Kira",
-      "greeting": "Клац-клац.."
-    },
-    "hayes": {
-      "texture": "assets/sprites/characters/hayes.png",
-      "name": "Hayes",
-      "greeting": "Не трогай мои файлы."
-    }
+  "boss": {
+    "name": "Arachna",
+    "greeting": "You dare to step into my web?\n[1] Attack\n[2] Dodge\n[3] Talk",
+    "defeat_msg": "N-no... impossible...\nYou defeated me... the fear fades...\n[E] Close",
+    "hit_msg": "You dare strike me?!\n",
+    "dodge_msg": "Coward. You dodged... this time.\nBut the web is everywhere.\n[E] Close",
+    "talk_msg": "Words... How curious.\nThe fear has slightly receded.\n[E] Close"
   },
-  "system": {
-    "help_text": "WASD - move   E - interact   ESC - quit",
-    "sys_title": "Система",
-    "msg_therapy": "Кошмар побеждён.\nСтрах отступил.",
-    "msg_failure": "Кошмар поглотил тебя...\nНо ты проснулась.",
-    "msg_neutral": "Ты сбежала из кошмара.\nСтрах остался."
+  "ui": {
+    "chest_title": "Chest",
+    "loot_heal": "You found bandages.\nThey have been added to your inventory [F].",
+    "loot_fear": "Sedatives...\nAdded to your inventory [F]."
   }
 }

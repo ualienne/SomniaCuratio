@@ -212,7 +212,7 @@ void ArachnophobiaScene::resolveBossAction() {
         DialogueManager::instance().showSingleReplica(
             m_assets.boss.name,
             m_assets.boss.hitMsg + "HP: " + std::to_string(m_boss->hp()) + "/" +
-                std::to_string(m_boss->maxHp()) + "\n[E] Закрыть");
+                std::to_string(m_boss->maxHp()) + "\n[E] Close");
       }
       break;
 

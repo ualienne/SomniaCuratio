@@ -54,7 +54,7 @@ class Player : public sf::Drawable {
   static constexpr float m_interpolationProgressMax = 1.f;
   static constexpr float m_tileHalfDivider = 2.f;
 
-  static constexpr int m_tileStepOffset = 3;
+  static constexpr int m_tileStepOffset = 2;
 
   static constexpr int m_textureRectTop = 0;
   static constexpr float m_spriteScaleX = 4.f;

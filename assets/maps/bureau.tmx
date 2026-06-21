@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.12.1" orientation="orthogonal" renderorder="right-down" width="86" height="48" tilewidth="16" tileheight="16" infinite="0" nextlayerid="10" nextobjectid="41">
+<map version="1.10" tiledversion="1.12.2" orientation="orthogonal" renderorder="right-down" width="86" height="48" tilewidth="16" tileheight="16" infinite="0" nextlayerid="10" nextobjectid="70">
  <tileset firstgid="1" source="bureau_tilesets.tsx"/>
  <layer id="1" name="background" width="86" height="48">
   <data encoding="csv">
@@ -106,20 +106,32 @@
 </data>
  </layer>
  <objectgroup id="3" name="collision">
-  <object id="20" name="vr_server_rack" x="1072" y="133.75" width="111" height="96.25"/>
-  <object id="24" name="chair_right" x="908.667" y="237.333">
-   <polygon points="0,0 84.6667,0 41.3333,79.3333"/>
-  </object>
-  <object id="25" name="chair_left" x="518.667" y="223.333">
-   <polygon points="0,0 84.6667,0 41.3333,79.3333"/>
-  </object>
-  <object id="26" name="plant_floor" x="38.6667" y="510">
-   <polygon points="0,0 65.6667,0 32.0577,99.3333"/>
-  </object>
-  <object id="22" name="coffee_table" x="1052.67" y="578.667" width="190.667" height="88.6667"/>
-  <object id="9" name="potted_plant" x="969" y="649.667">
-   <polygon points="0,0 -25,87 29,87"/>
-  </object>
+  <object id="20" name="vr_server_rack" x="1074.9" y="144" width="109.096" height="80"/>
+  <object id="22" name="coffee_table" x="1072" y="592" width="160" height="64"/>
+  <object id="41" name="bookshelf" x="159.26" y="37.9503" width="199.459" height="175.26"/>
+  <object id="42" name="desk_retro" x="503.288" y="124.954" width="211.929" height="113.31"/>
+  <object id="43" name="desk_pc_right" x="832" y="88" width="240" height="160"/>
+  <object id="44" name="server_rack" x="1076.78" y="145.907" width="107.616" height="82.2781"/>
+  <object id="45" name="desk_director" x="165.978" y="302.548" width="99.0182" height="219.387"/>
+  <object id="46" name="coffee_bar" x="729.167" y="536.455" width="128" height="96"/>
+  <object id="47" name="trophy_shelf" x="865.594" y="454.69" width="126.235" height="80"/>
+  <object id="48" name="shelf_bottom_right" x="1176.03" y="461.808" width="104.712" height="113.424"/>
+  <object id="49" name="desk_bottom_right" x="1047.69" y="580.925" width="192.57" height="123.502"/>
+  <object id="50" name="plant_top_center" x="759.573" y="137.48" width="48" height="64"/>
+  <object id="51" name="plant_bottom_right" x="946.164" y="673.907" width="48" height="64"/>
+  <object id="52" name="plant_left_mid" x="39.9718" y="548.527" width="64" height="64"/>
+  <object id="53" name="wall" x="2.61921" y="622.061" width="373.237" height="144.056"/>
+  <object id="57" name="wall1" x="485.081" y="614.079" width="41.9754" height="150.546" rotation="0.427144"/>
+  <object id="59" name="wall3" x="354.902" y="19.644" width="23.5729" height="298.59"/>
+  <object id="60" name="wall4" x="358.831" y="420.383" width="18.3344" height="123.103"/>
+  <object id="61" name="wall5" x="3.92881" y="2.61921" width="17.0248" height="622.061"/>
+  <object id="62" name="wall6" x="6.54802" y="5.23841" width="1361.99" height="153.224"/>
+  <object id="63" name="wall7" x="373.237" y="750.403" width="1005.78" height="15.7152"/>
+  <object id="64" name="wall8" x="700.638" y="432.169" width="665.278" height="111.316"/>
+  <object id="65" name="wall9" x="1004.47" y="588.012" width="17.0248" height="166.32"/>
+  <object id="66" name="wall10" x="1351.51" y="11.7864" width="26.1921" height="754.331"/>
+  <object id="68" name="wall2" x="-55.4514" y="186.548" width="199.435" height="136.199" rotation="314.537"/>
+  <object id="69" name="wall11" x="1289.72" y="84.6178" width="167.629" height="112.626" rotation="43.9892"/>
  </objectgroup>
  <objectgroup id="4" name="triggers">
   <object id="1" name="coffee_zone" x="741.25" y="485.083" width="104.833" height="88.9167">
@@ -165,7 +177,7 @@
     <property name="text" value="Это лучше не трогать"/>
    </properties>
   </object>
-  <object id="27" name="plant_flavor" x="969" y="649.667" width="54" height="40">
+  <object id="27" name="plant_flavor" x="944.118" y="699.432" width="54" height="40">
    <properties>
     <property name="action" value="inspect"/>
     <property name="once" type="bool" value="true"/>

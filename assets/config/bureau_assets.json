@@ -1,31 +1,32 @@
-{
-  "paths": {
-    "font_path": "assets/fonts/PressStart2P.ttf",
-    "map_path": "assets/maps/bureau.tmx",
-    "player_texture": "assets/sprites/characters/agent.png"
-  },
-  "npcs": {
-    "voss": {
-      "texture": "assets/sprites/characters/voss.png",
-      "name": "Dr. Emil Voss",
-      "greeting": "Ты как бледная поганка. Кошмарики задрали?"
+
+  {
+    "paths": {
+      "font_path": "assets/fonts/PressStart2P.ttf",
+      "map_path": "assets/maps/bureau.tmx",
+      "player_texture": "assets/sprites/characters/agent.png"
     },
-    "kira": {
-      "texture": "assets/sprites/characters/kira.png",
-      "name": "Kira",
-      "greeting": "Клац-клац.."
+    "npcs": {
+      "voss": {
+        "texture": "assets/sprites/characters/voss.png",
+        "name": "Dr. Emil Voss",
+        "greeting": "You look like a ghost.\nNightmares keeping you up again?"
+      },
+      "kira": {
+        "texture": "assets/sprites/characters/kira.png",
+        "name": "Kira",
+        "greeting": "Click-clack..."
+      },
+      "hayes": {
+        "texture": "assets/sprites/characters/hayes.png",
+        "name": "Hayes",
+        "greeting": "Don't touch my files."
+      }
     },
-    "hayes": {
-      "texture": "assets/sprites/characters/hayes.png",
-      "name": "Hayes",
-      "greeting": "Не трогай мои файлы."
+    "system": {
+      "help_text": "WASD - move   E - interact   ESC - quit",
+      "sys_title": "System",
+      "msg_therapy": "The nightmare has been defeated.\nThe fear has receded.",
+      "msg_failure": "The nightmare consumed you...\nBut you woke up.",
+      "msg_neutral": "You escaped from the nightmare.\nThe fear remains."
     }
-  },
-  "system": {
-    "help_text": "WASD - move   E - interact   ESC - quit",
-    "sys_title": "Система",
-    "msg_therapy": "Кошмар побеждён.\nСтрах отступил.",
-    "msg_failure": "Кошмар поглотил тебя...\nНо ты проснулась.",
-    "msg_neutral": "Ты сбежала из кошмара.\nСтрах остался."
   }
-}
