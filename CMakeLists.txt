@@ -131,16 +131,15 @@ target_link_libraries(SomniaCuratio PRIVATE
     nlohmann_json::nlohmann_json
 )
 
-# --- Копирование ассетов ---------------------------------------------------
-# После сборки копируем папки assets/ и data/ рядом с .exe.
-# Иначе игра не найдёт карты, спрайты и диалоги в runtime.
+# --- Копирование ассетов
+# После сборки копируем папки assets/ и data/ рядом с .exe, чтобы игра их видела
 add_custom_command(TARGET SomniaCuratio POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_directory
-        "${CMAKE_SOURCE_DIR}/assets"
-        "$<TARGET_FILE_DIR:SomniaCuratio>/assets"
+    "${CMAKE_CURRENT_SOURCE_DIR}/assets"
+    "$<TARGET_FILE_DIR:SomniaCuratio>/assets"
     COMMAND ${CMAKE_COMMAND} -E copy_directory
-        "${CMAKE_SOURCE_DIR}/data"
-        "$<TARGET_FILE_DIR:SomniaCuratio>/data"
+    "${CMAKE_CURRENT_SOURCE_DIR}/data"
+    "$<TARGET_FILE_DIR:SomniaCuratio>/data"
 )
 
 # --- Предупреждения --------------------------------------------------------
@@ -149,7 +148,9 @@ if(MSVC)
     # /W4 — максимальный уровень предупреждений MSVC (но не /Wall, он шумный)
     # /permissive- — строгое соответствие стандарту
     # /Zc:__cplusplus — MSVC без этого флага врёт про версию стандарта
-    target_compile_options(SomniaCuratio PRIVATE /W4 /permissive- /Zc:__cplusplus)
+    # /external:anglebrackets — все <angle bracket> включения = внешние
+    # /external:W0 — для внешних заголовков — 0 предупреждений
+    target_compile_options(SomniaCuratio PRIVATE /W4 /permissive- /Zc:__cplusplus /external:anglebrackets /external:W0)
 else()
     target_compile_options(SomniaCuratio PRIVATE -Wall -Wextra -Wpedantic)
 endif()
