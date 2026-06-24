@@ -21,7 +21,7 @@ namespace somnia {
 
         void stepTowardPlayer(sf::Vector2i playerTile, const TileMap& map);
 
-        void update(float deltaTime, sf::Vector2f /*unused*/);
+        void update(float deltaTime, sf::Vector2f);
 
         bool takeDamage(int dmg = 1);
 

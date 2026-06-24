@@ -20,7 +20,7 @@ ArachnophobiaScene::ArachnophobiaScene(sf::RenderWindow& window,
                 static_cast<float>(window.getSize().y)}),
       m_spawnPointName(spawnPointName),
       m_onExit(std::move(onExit)) {
-  // Загружаем JSON строки и пути
+
   m_assets.loadFromFile("assets/config/arachnophobia_assets.json");
 
   if (m_font.openFromFile(m_assets.fontPath))
@@ -90,8 +90,11 @@ ArachnophobiaScene::ArachnophobiaScene(sf::RenderWindow& window,
 }
 
 void ArachnophobiaScene::handleEvent(const sf::Event& event) {
-  m_inventory.handleEvent(event, m_player, m_fearTimer, m_fearTimerMinLimit,
-                          m_chestFearReduceAmount);
+    m_inventory.handleEvent(event, m_player, m_fearTimer, m_fearTimerMinLimit,
+        m_chestFearReduceAmount,
+        m_assets.ui.chestTitle,
+        m_assets.ui.lootHeal,
+        m_assets.ui.lootFear);
 
   if (m_inventory.isOpen()) {
     return;

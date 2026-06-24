@@ -60,7 +60,7 @@ void Spider::stepTowardPlayer(sf::Vector2i playerTile, const TileMap& map) {
   }
 }
 
-void Spider::update(float deltaTime, sf::Vector2f /*unused*/) {
+void Spider::update(float deltaTime, sf::Vector2f) {
   if (!m_sprite || isDead()) return;
 
   if (m_isAnimating) {

@@ -15,8 +15,12 @@ class Inventory {
 
   void addItem(ItemType item);
 
-  void handleEvent(const sf::Event& event, Player& player, float& fearTimer,
-                   float fearTimerMinLimit, float chestFearReduceAmount);
+  void handleEvent(const sf::Event& event, Player& player,
+      float& fearTimer, float fearTimerMinLimit,
+      float chestFearReduceAmount,
+      const std::string& invTitle,
+      const std::string& msgHeal,
+      const std::string& msgFear);
   void render(sf::RenderWindow& window, const sf::Font& font) const;
 
   bool isOpen() const { return m_isOpen; }
